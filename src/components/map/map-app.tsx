@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTheme } from "@/components/theme-toggle";
 import RegionSearch, { type SearchResult } from "@/components/region-search";
 import type { Locale } from "@/i18n/config";
-import type { Messages } from "@/i18n/dictionary";
+import { fmt, type Messages } from "@/i18n/dictionary";
 import type { CompactStat } from "@/lib/data";
 import type { HoverInfo } from "./map-view";
 import Filters from "./filters";
@@ -42,10 +42,14 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
   }, []);
 
   const range = useMemo(() => periodRange(state, meta?.latest.any ?? null), [state, meta]);
-  const query = useMemo(() => {
-    const q = new URLSearchParams({ level: state.l, direction: state.d, source: state.s, isp: String(state.isp), from: range.from, to: range.to });
-    return q.toString();
-  }, [state.l, state.d, state.s, state.isp, range]);
+  // Hexagons and communities are too small to draw when zoomed out (and aren't in
+  // the low-zoom tiles), so census divisions stand in until the user zooms in.
+  const displayLevel = zoom < MIN_ZOOM_FOR[state.l] - 0.01 ? (zoom < MIN_ZOOM_FOR.cd ? "pr" : "cd") : state.l;
+  const queryFor = useCallback(
+    (level: string) => new URLSearchParams({ level, direction: state.d, source: state.s, isp: String(state.isp), from: range.from, to: range.to }).toString(),
+    [state.d, state.s, state.isp, range],
+  );
+  const query = useMemo(() => queryFor(displayLevel), [queryFor, displayLevel]);
 
   useEffect(() => {
     if (!meta) return;
@@ -83,8 +87,8 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
   };
 
   const highlighted = [state.r, state.c].filter(Boolean) as string[];
-  const needsZoom = zoom < MIN_ZOOM_FOR[state.l] - 0.01;
-  const exportHref = `/api/export?${query}`;
+  const fallback = displayLevel !== state.l;
+  const exportHref = `/api/export?${queryFor(state.l)}`;
   const levelLabel = t.levels[state.l];
 
   return (
@@ -93,7 +97,7 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
       <MapView
         theme={theme}
         locale={locale}
-        level={state.l}
+        level={displayLevel}
         metric={state.m}
         direction={state.m === "advertised" ? "down" : state.d}
         stats={stats}
@@ -155,13 +159,14 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
       {/* Status chips */}
       <div className="pointer-events-none absolute bottom-20 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 md:bottom-auto md:top-3" aria-live="polite">
         {loadingStats && <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs shadow-card">{t.common.loading}</span>}
-        {needsZoom && state.v === "map" && (
+        {fallback && state.v === "map" && (
           <button
             type="button"
             onClick={() => setZoomTo({ zoom: MIN_ZOOM_FOR[state.l] + 0.5, key: Date.now() })}
-            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs shadow-card hover:bg-surface-2"
+            className="pointer-events-auto inline-flex max-w-[90vw] items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs shadow-card hover:bg-surface-2"
           >
-            <ZoomIn className="size-3.5" aria-hidden /> {levelLabel}
+            <ZoomIn className="size-3.5 shrink-0" aria-hidden />
+            {fmt(t.map.zoomFallback, { level: levelLabel, shown: t.levels[displayLevel] })}
           </button>
         )}
       </div>

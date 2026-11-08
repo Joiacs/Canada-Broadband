@@ -80,6 +80,7 @@ const en = {
     meeting: "{pct}% meet 50/10",
     advertisedPct: "{pct}% of people can order 50/10",
     clickHint: "Click an area for details",
+    zoomFallback: "Zoom in to see {level} (showing {shown})",
     compare: "Compare",
     compareWith: "Pick a second area on the map to compare",
     cancelCompare: "Cancel comparison",
