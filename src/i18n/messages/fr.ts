@@ -84,7 +84,7 @@ const fr: Messages = {
     meeting: "{pct} % atteignent 50/10",
     advertisedPct: "{pct} % des gens peuvent s'abonner au 50/10",
     clickHint: "Cliquez sur une zone pour les détails",
-    zoomFallback: "Zoomez pour afficher : {level} (affichage actuel : {shown})",
+    zoomFallback: "Zoomez pour afficher : {level}",
     compare: "Comparer",
     compareWith: "Choisissez une deuxième zone sur la carte",
     cancelCompare: "Annuler la comparaison",
