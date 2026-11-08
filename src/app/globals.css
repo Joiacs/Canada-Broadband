@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens. Light by default; dark follows the OS unless the user picked
+   a theme (data-theme on <html>, set by the theme toggle).
+--------------------------------------------------------------------------- */
+:root {
+  --bg: #f7f8fb;
+  --surface: #ffffff;
+  --surface-2: #f0f2f7;
+  --text: #121826;
+  --muted: #566074;
+  --border: #dde2ec;
+  --brand: #5b34e6;
+  --brand-2: #1f9df0;
+  --brand-contrast: #ffffff;
+  --focus: #1f9df0;
+  --good: #0f766e;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --nodata: #a3aab8;
+  --ctrl-icon-filter: none;
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 4px 16px rgb(16 24 40 / 0.08);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c111b;
+    --surface: #141b27;
+    --surface-2: #1c2433;
+    --text: #e8ecf4;
+    --muted: #9aa5b8;
+    --border: #2a3446;
+    --brand: #8f75ff;
+    --brand-2: #4cc0ff;
+    --brand-contrast: #0c111b;
+    --focus: #4cc0ff;
+    --good: #2dd4bf;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --nodata: #4b5568;
+    --ctrl-icon-filter: invert(1);
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.35);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0c111b;
+  --surface: #141b27;
+  --surface-2: #1c2433;
+  --text: #e8ecf4;
+  --muted: #9aa5b8;
+  --border: #2a3446;
+  --brand: #8f75ff;
+  --brand-2: #4cc0ff;
+  --brand-contrast: #0c111b;
+  --focus: #4cc0ff;
+  --good: #2dd4bf;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --nodata: #4b5568;
+  --ctrl-icon-filter: invert(1);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-2: var(--brand-2);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-nodata: var(--nodata);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --shadow-card: var(--shadow);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.brand-gradient {
+  background-image: linear-gradient(135deg, var(--brand-2), var(--brand));
+}
+
+.text-gradient {
+  background-image: linear-gradient(135deg, var(--brand-2), var(--brand));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Long-form content pages */
+.prose-page h2 {
+  font-size: 1.35rem;
+  font-weight: 650;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+.prose-page h3 {
+  font-size: 1.05rem;
+  font-weight: 650;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.prose-page p,
+.prose-page li {
+  line-height: 1.7;
+}
+.prose-page p + p {
+  margin-top: 0.85rem;
+}
+.prose-page ul,
+.prose-page ol {
+  padding-left: 1.25rem;
+  margin: 0.75rem 0;
+}
+.prose-page ul {
+  list-style: disc;
+}
+.prose-page ol {
+  list-style: decimal;
+}
+.prose-page li + li {
+  margin-top: 0.35rem;
+}
+.prose-page a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-page code {
+  font-size: 0.85em;
+  background: var(--surface-2);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+  overflow-wrap: anywhere;
+}
+.prose-page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+.prose-page th,
+.prose-page td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+/* MapLibre controls follow the theme */
+.maplibregl-ctrl-group {
+  background: var(--surface) !important;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow) !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--border) !important;
+}
+.maplibregl-ctrl-icon {
+  filter: var(--ctrl-icon-filter);
+}
+.maplibregl-ctrl-attrib {
+  background: color-mix(in srgb, var(--surface) 85%, transparent) !important;
+  color: var(--muted);
+  font-size: 11px;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

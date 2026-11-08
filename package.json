@@ -1,0 +1,55 @@
+{
+  "name": "ideva-broadband",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "postinstall": "node scripts/copy-vendor-assets.mjs",
+    "db:start": "supabase start -x gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "pipeline:boundaries": "tsx --env-file-if-exists=.env.local pipeline/boundaries.ts",
+    "pipeline:ised": "tsx --env-file-if-exists=.env.local pipeline/ised.ts",
+    "pipeline:tiles": "tsx --env-file-if-exists=.env.local pipeline/tiles.ts",
+    "pipeline:mlab": "tsx --env-file-if-exists=.env.local pipeline/mlab.ts",
+    "pipeline:nightly": "tsx --env-file-if-exists=.env.local pipeline/nightly.ts",
+    "pipeline:dev-seed": "tsx --env-file-if-exists=.env.local pipeline/dev-seed.ts"
+  },
+  "dependencies": {
+    "@m-lab/ndt7": "^0.1.5",
+    "lucide-react": "^1.70.0",
+    "maplibre-gl": "^6.17.0",
+    "next": "16.4.5",
+    "pmtiles": "^4.5.0",
+    "postgres": "^4.1.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@google-cloud/bigquery": "^9.6.0",
+    "@playwright/test": "^1.65.0",
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.5",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.1.0"
+  },
+  "packageManager": "pnpm@9.1.1",
+  "engines": {
+    "node": ">=22.12"
+  }
+}

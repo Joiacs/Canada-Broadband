@@ -1,0 +1,54 @@
+name: Nightly data pipeline
+
+# Imports the last few days of M-Lab tests, verifies community tests, rebuilds
+# rollups and applies retention. See docs/OPERATIONS.md.
+on:
+  schedule:
+    - cron: "17 9 * * *" # 09:17 UTC ≈ 4–5 am Eastern
+  workflow_dispatch:
+    inputs:
+      backfill_from:
+        description: "Optional: backfill start date (YYYY-MM-DD) instead of the nightly window"
+        required: false
+      backfill_to:
+        description: "Optional: backfill end date (YYYY-MM-DD)"
+        required: false
+
+permissions:
+  contents: read
+  id-token: write # for Google Workload Identity Federation
+
+concurrency:
+  group: nightly-pipeline
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+      IP_HASH_SALT: ${{ secrets.IP_HASH_SALT }}
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      RAW_RETENTION_DAYS: ${{ vars.RAW_RETENTION_DAYS || '21' }}
+      MLAB_LOOKBACK_DAYS: ${{ vars.MLAB_LOOKBACK_DAYS || '4' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - name: Backfill
+        if: ${{ github.event.inputs.backfill_from != '' }}
+        run: pnpm pipeline:mlab --from "${{ github.event.inputs.backfill_from }}" --to "${{ github.event.inputs.backfill_to }}"
+      - name: Nightly
+        run: pnpm pipeline:nightly
+      - name: Check site health
+        if: ${{ vars.SITE_URL != '' }}
+        run: curl --fail --silent "${{ vars.SITE_URL }}/api/health"
