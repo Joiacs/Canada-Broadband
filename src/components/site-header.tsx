@@ -22,7 +22,7 @@ export default function SiteHeader({ locale, t }: { locale: Locale; t: Messages 
     <header className="sticky top-0 z-40 border-b border-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/75">
       <div className="mx-auto flex h-14 max-w-screen-2xl items-center gap-3 px-4">
         <Link href={localePath(locale, "home")} className="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
-          <Image src="/ideva-mark.png" alt="" width={28} height={28} priority />
+          <Image src="/ideva-bulb.png" alt="" width={28} height={28} priority />
           <span>
             Ideva <span className="text-gradient">{locale === "fr" ? "Haute vitesse" : "Broadband"}</span>
           </span>

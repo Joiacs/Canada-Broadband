@@ -7,7 +7,7 @@ export const alt = "Ideva Broadband";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const mark = `data:image/png;base64,${(await readFile(join(process.cwd(), "public", "ideva-mark.png"))).toString("base64")}`;
+const mark = `data:image/png;base64,${(await readFile(join(process.cwd(), "public", "ideva-bulb.png"))).toString("base64")}`;
 
 export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
