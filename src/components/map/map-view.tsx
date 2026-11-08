@@ -108,6 +108,7 @@ export default function MapView(props: Props) {
     mapRef.current = map;
 
     const onStyleLoad = () => {
+      tuneLabels(map);
       addOverlay(map);
       styleReady.current = true;
       try {
@@ -208,6 +209,21 @@ export default function MapView(props: Props) {
         filter: ["in", ["get", "rid"], ["literal", []]],
         paint: { "line-color": theme === "dark" ? "#c4b5fd" : "#5b34e6", "line-width": 3 },
       });
+    }
+  }
+
+  /**
+   * The basemaps' place labels (provinces, territories, cities) are tuned for a
+   * plain background; over our coloured fills they need strong contrast.
+   */
+  function tuneLabels(map: MlMap) {
+    const dark = propsRef.current.theme === "dark";
+    for (const layer of map.getStyle().layers) {
+      if (layer.type !== "symbol" || (layer as { "source-layer"?: string })["source-layer"] !== "place") continue;
+      map.setPaintProperty(layer.id, "text-color", dark ? "#eef1f6" : "#1a2130");
+      map.setPaintProperty(layer.id, "text-halo-color", dark ? "rgba(10,14,22,0.9)" : "rgba(255,255,255,0.92)");
+      map.setPaintProperty(layer.id, "text-halo-width", 1.6);
+      map.setPaintProperty(layer.id, "text-halo-blur", 0.4);
     }
   }
 
