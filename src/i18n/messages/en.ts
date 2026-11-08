@@ -69,6 +69,7 @@ const en = {
     searchLabel: "Search places",
     noResults: "No matching places",
     table: "Table",
+    downloadCsv: "Download CSV",
     mapView: "Map",
     legend: "Legend",
     legendNoData: "Not enough tests",

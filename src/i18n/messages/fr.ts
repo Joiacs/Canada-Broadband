@@ -71,6 +71,7 @@ const fr: Messages = {
     searchLabel: "Rechercher un lieu",
     noResults: "Aucun lieu correspondant",
     table: "Tableau",
+    downloadCsv: "Télécharger le CSV",
     mapView: "Carte",
     legend: "Légende",
     legendNoData: "Pas assez de tests",

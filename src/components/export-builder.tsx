@@ -58,7 +58,7 @@ export default function ExportBuilder({ locale, latest }: { locale: Locale; late
       </label>
       <div className="flex items-end">
         <a href={href} download className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-contrast no-underline">
-          <Download className="size-4" aria-hidden /> CSV
+          <Download className="size-4" aria-hidden /> {t.map.downloadCsv}
         </a>
       </div>
     </div>
