@@ -36,7 +36,7 @@ export function DataEn({ locale, latest }: { locale: Locale; latest: string }) {
       <h2>Licence and attribution</h2>
       <p>
         Ideva&apos;s aggregated statistics are published under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 (CC BY 4.0)</a>. Please cite:{" "}
-        <em>Ideva Broadband ({SITE.replace(/^https?:\/\//, "")}), using Measurement Lab and ISED National Broadband Data.</em>
+        <em>Canada Broadband by Ideva ({SITE.replace(/^https?:\/\//, "")}), using Measurement Lab and ISED National Broadband Data.</em>
       </p>
       <ul>
         <li>
@@ -67,7 +67,7 @@ export function DataFr({ locale, latest }: { locale: Locale; latest: string }) {
       <h2>Licence et attribution</h2>
       <p>
         Les statistiques agrégées d&apos;Ideva sont publiées sous licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr">Creative Commons Attribution 4.0 (CC BY 4.0)</a>. Veuillez
-        citer : <em>Ideva Haute vitesse ({SITE.replace(/^https?:\/\//, "")}), à partir des données de Measurement Lab et des Données nationales sur la large bande d&apos;ISDE.</em>
+        citer : <em>Large bande Canada, par Ideva ({SITE.replace(/^https?:\/\//, "")}), à partir des données de Measurement Lab et des Données nationales sur la large bande d&apos;ISDE.</em>
       </p>
       <ul>
         <li>

@@ -1,4 +1,4 @@
-# Deploying Ideva Broadband
+# Deploying Canada Broadband
 
 Expect about half a day the first time. Every step only has to be done once.
 

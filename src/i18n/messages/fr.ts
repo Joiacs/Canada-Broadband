@@ -2,8 +2,11 @@ import type { Messages } from "./en";
 
 const fr: Messages = {
   meta: {
-    siteName: "Ideva Haute vitesse",
-    title: "Ideva Haute vitesse — La carte des vitesses Internet au Canada",
+    siteName: "Large bande Canada",
+    brandLead: "Large bande",
+    brandAccent: "Canada",
+    by: "par Ideva",
+    title: "Large bande Canada — Les vitesses Internet au Canada, par Ideva",
     description:
       "Explorez les vitesses Internet mesurées et la disponibilité annoncée de la large bande partout au Canada, et testez votre propre connexion.",
   },

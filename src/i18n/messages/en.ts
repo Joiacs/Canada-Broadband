@@ -1,7 +1,11 @@
 const en = {
   meta: {
-    siteName: "Ideva Broadband",
-    title: "Ideva Broadband — Canada's internet speed map",
+    siteName: "Canada Broadband",
+    /** header wordmark: plain part + gradient part */
+    brandLead: "Canada",
+    brandAccent: "Broadband",
+    by: "by Ideva",
+    title: "Canada Broadband — Internet speeds across Canada, by Ideva",
     description:
       "Explore measured internet speeds and advertised broadband availability across Canada, and test your own connection.",
   },

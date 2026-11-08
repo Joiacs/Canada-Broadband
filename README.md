@@ -1,4 +1,4 @@
-# Ideva Broadband
+# Canada Broadband (by Ideva)
 
 Canada's internet speed map, built by Ideva Inc. It shows:
 

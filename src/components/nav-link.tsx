@@ -21,7 +21,7 @@ export default function NavLink({ href, exact, block, children }: { href: string
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-surface-2 ${block ? "block" : ""} ${active ? "font-semibold text-text" : "text-muted"}`}
+      className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-surface-2 ${block ? "block" : ""} ${active ? "font-semibold text-text" : "text-muted"}`}
     >
       {children}
     </Link>

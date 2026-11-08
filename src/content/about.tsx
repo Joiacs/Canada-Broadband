@@ -67,7 +67,7 @@ export function AboutEn() {
   return (
     <>
       <p className="text-lg">
-        Ideva Broadband shows how fast internet really is across Canada — community by community — and how that compares with what providers say is available.
+        Canada Broadband shows how fast internet really is across Canada — community by community — and how that compares with what providers say is available.
       </p>
       <p>
         Federal maps tell you where 50/10 Mbps service is <em>offered</em>. They can&apos;t tell you what people actually get. We bring together millions of open speed-test results with the
@@ -87,7 +87,7 @@ export function AboutEn() {
       </ul>
       <h2>Who we are</h2>
       <p>
-        Ideva Broadband is built and maintained by Ideva Inc. The project started in 2023 as a prototype map of M-Lab data and was rebuilt in 2026 with exact ISED availability data, community
+        Canada Broadband is built and maintained by Ideva Inc. The project started in 2023 as a prototype map of M-Lab data and was rebuilt in 2026 with exact ISED availability data, community
         speed testing and a fully bilingual interface. Learn more about Ideva at <a href="https://ideva.app/">ideva.app</a>.
       </p>
       <h2>Data we rely on</h2>
@@ -105,7 +105,7 @@ export function AboutFr() {
   return (
     <>
       <p className="text-lg">
-        Ideva Haute vitesse montre la vitesse réelle d&apos;Internet partout au Canada — collectivité par collectivité — et la compare à ce que les fournisseurs disent offrir.
+        Large bande Canada montre la vitesse réelle d&apos;Internet partout au Canada — collectivité par collectivité — et la compare à ce que les fournisseurs disent offrir.
       </p>
       <p>
         Les cartes fédérales indiquent où le service 50/10 Mbit/s est <em>offert</em>. Elles ne disent pas ce que les gens obtiennent vraiment. Nous réunissons des millions de résultats ouverts
@@ -126,7 +126,7 @@ export function AboutFr() {
       </ul>
       <h2>Qui sommes-nous</h2>
       <p>
-        Ideva Haute vitesse est conçu et maintenu par Ideva Inc. Le projet a commencé en 2023 comme prototype de carte des données de M-Lab et a été reconstruit en 2026 avec les données exactes
+        Large bande Canada est conçu et maintenu par Ideva Inc. Le projet a commencé en 2023 comme prototype de carte des données de M-Lab et a été reconstruit en 2026 avec les données exactes
         de disponibilité d&apos;ISDE, des tests de vitesse communautaires et une interface entièrement bilingue. Pour en savoir plus sur Ideva : <a href="https://ideva.app/">ideva.app</a>.
       </p>
       <h2>Nos sources de données</h2>

@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getDictionary } from "@/i18n/dictionary";
 
-export const alt = "Ideva Broadband";
+export const alt = "Canada Broadband, by Ideva";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -17,7 +17,10 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 72, background: "linear-gradient(135deg, #0c111b 0%, #1d1648 100%)", color: "#e8ecf4" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <img src={mark} width={84} height={84} alt="" />
-          <div style={{ fontSize: 44, fontWeight: 700 }}>{t.meta.siteName}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
+            <div style={{ fontSize: 44, fontWeight: 700 }}>{t.meta.siteName}</div>
+            <div style={{ fontSize: 26, color: "#9aa5b8" }}>{t.meta.by}</div>
+          </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ fontSize: 68, fontWeight: 700, lineHeight: 1.05 }}>{t.map.title}</div>

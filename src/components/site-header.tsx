@@ -8,7 +8,7 @@ import LanguageSwitcher from "./language-switcher";
 import ThemeToggle from "./theme-toggle";
 import NavLink from "./nav-link";
 
-const plainLink = "rounded-md px-3 py-1.5 text-sm text-muted transition-colors hover:bg-surface-2";
+const plainLink = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted transition-colors hover:bg-surface-2";
 
 export default function SiteHeader({ locale, t }: { locale: Locale; t: Messages }) {
   const items: { page: PageKey; label: string }[] = [
@@ -22,9 +22,10 @@ export default function SiteHeader({ locale, t }: { locale: Locale; t: Messages 
     <header className="sticky top-0 z-40 border-b border-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/75">
       <div className="mx-auto flex h-14 max-w-screen-2xl items-center gap-3 px-4">
         <Link href={localePath(locale, "home")} className="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
-          <Image src="/ideva-bulb.png" alt="" width={28} height={28} priority />
+          <Image src="/ideva-bulb.png" alt="Ideva" width={28} height={28} priority />
           <span>
-            Ideva <span className="text-gradient">{locale === "fr" ? "Haute vitesse" : "Broadband"}</span>
+            {t.meta.brandLead} <span className="text-gradient">{t.meta.brandAccent}</span>
+            <span className="ml-1.5 hidden text-xs font-normal text-muted lg:inline">{t.meta.by}</span>
           </span>
         </Link>
         <nav aria-label="Main" className="ml-4 hidden items-center gap-1 md:flex">
