@@ -19,6 +19,10 @@ export function db(): postgres.Sql {
     if (!url) throw new Error("DATABASE_URL is not set");
     g.__ideva_sql = postgres(url, {
       max: Number(process.env.DATABASE_POOL_SIZE ?? 5),
+      // Supabase's transaction pooler (Supavisor) never answers queries that are
+      // pipelined on one connection, so pages running more parallel queries than
+      // the pool size hung until query_timeout. One query per connection at a time.
+      max_pipeline: 1,
       prepare: false,
       idle_timeout: 20,
       connect_timeout: 10,
