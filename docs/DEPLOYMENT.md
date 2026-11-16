@@ -54,7 +54,7 @@ Time: about half a day. Monthly cost while testing: ~$0 (free tiers) + domain. A
    - **Session pooler** (port **5432**, host ends in `pooler.supabase.com`) → `PIPELINE_DATABASE_URL` for the data scripts and GitHub. Don't use "Direct connection": it's IPv6-only and GitHub's runners can't reach it.
 3. Apply the schema from the project folder:
    ```bash
-   cd "~/Desktop/Broaband Canada Project/ideva-broadband"
+   cd ~/Desktop/"Broaband Canada Project"/ideva-broadband
    supabase login
    supabase link --project-ref <project-ref>      # asks for the DB password
    supabase db push                               # applies 3 migrations
