@@ -10,6 +10,10 @@ const fr: Messages = {
     description:
       "Explorez les vitesses Internet mesurées et la disponibilité annoncée de la large bande partout au Canada, et testez votre propre connexion.",
   },
+  demo: {
+    short: "Démo : résultats de tests simulés",
+    banner: "Version de démonstration : les résultats de tests de vitesse affichés sont simulés pendant que nous recueillons des commentaires. La disponibilité annoncée (ISDE) est réelle.",
+  },
   nav: {
     map: "Carte",
     speedTest: "Test de vitesse",

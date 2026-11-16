@@ -10,7 +10,7 @@ export default async function MapPage({ params }: PageProps<"/[locale]">) {
   const t = getDictionary(locale);
   return (
     // MapApp reads filters from the URL, so it renders on the client inside Suspense.
-    <Suspense fallback={<div className="h-[calc(100dvh-3.5rem)] animate-pulse bg-surface-2" aria-label={t.common.loading} />}>
+    <Suspense fallback={<div className="h-[calc(100dvh-3.5rem-var(--banner-h,0px))] animate-pulse bg-surface-2" aria-label={t.common.loading} />}>
       <MapApp locale={locale} t={t} />
     </Suspense>
   );

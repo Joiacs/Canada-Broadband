@@ -20,7 +20,7 @@ const MapView = dynamic(() => import("./map-view"), { ssr: false, loading: () =>
 
 type Meta = { latest: { any: string | null }; isps: { id: number; slug: string; name: string }[] };
 
-const MIN_ZOOM_FOR: Record<string, number> = { pr: 0, cd: 2, csd: 4, hex: 5 };
+const MIN_ZOOM_FOR: Record<string, number> = { pr: 0, cd: 0, csd: 4, hex: 5 };
 
 export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
   const [state, update] = useMapState();
@@ -89,7 +89,7 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
   const levelLabel = t.levels[state.l];
 
   return (
-    <div className="relative h-[calc(100dvh-3.5rem)] min-h-[520px] w-full overflow-hidden">
+    <div className="relative h-[calc(100dvh-3.5rem-var(--banner-h,0px))] min-h-[520px] w-full overflow-hidden">
       <h1 className="sr-only">{t.map.title}</h1>
       <MapView
         theme={theme}

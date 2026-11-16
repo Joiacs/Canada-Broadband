@@ -24,6 +24,8 @@ concurrency:
 
 jobs:
   pipeline:
+    # Skipped (not failed) until Google Cloud is configured — e.g. on a demo deployment.
+    if: ${{ vars.GCP_PROJECT_ID != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:

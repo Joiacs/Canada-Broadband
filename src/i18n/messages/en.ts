@@ -9,6 +9,10 @@ const en = {
     description:
       "Explore measured internet speeds and advertised broadband availability across Canada, and test your own connection.",
   },
+  demo: {
+    short: "Demo: speed-test numbers are simulated",
+    banner: "Demo version: the speed-test numbers on this site are simulated while we gather feedback. Advertised availability (ISED) is real.",
+  },
   nav: {
     map: "Map",
     speedTest: "Speed test",

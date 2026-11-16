@@ -1,23 +1,30 @@
 /**
- * LOCAL DEVELOPMENT ONLY — fills the database with *synthetic* tests so the
- * map has something to draw before BigQuery access is set up.
+ * Fills the database with *synthetic* (fake) tests so the map has something to
+ * draw before real M-Lab data is loaded. For local development and demo sites.
  *
- *   pnpm pipeline:dev-seed [--days 120] [--clear]
+ *   pnpm pipeline:dev-seed [--days 120] [--slim] [--clear] [--allow-remote]
  *
- * Refuses to run unless DATABASE_URL points at localhost. Synthetic rows use
- * uuids starting with "devseed-" and are removed with --clear.
+ *   --slim          delete the raw fake tests after building the statistics
+ *                   (the map only needs the statistics; saves ~60% of space —
+ *                   use on Supabase's free plan)
+ *   --allow-remote  required to seed anything other than a local database.
+ *                   Only use on a DEMO database: fake numbers would mix with
+ *                   real ones on a production site.
+ *   --clear         remove all fake data and stop
+ *
+ * Synthetic rows use ids starting with "devseed-".
  */
-import { addDays, args, isoDay, requireEnv } from "./lib/env";
-import { runJob } from "./lib/db";
+import { addDays, args, isoDay } from "./lib/env";
+import { pipelineUrl, runJob } from "./lib/db";
 import { processRange } from "./lib/mlab-ingest";
 
-const url = new URL(requireEnv("DATABASE_URL"));
-if (!["localhost", "127.0.0.1", "::1"].includes(url.hostname)) {
-  console.error(`Refusing to seed synthetic data into a non-local database (${url.hostname}).`);
+const a = args();
+const url = new URL(pipelineUrl());
+if (!["localhost", "127.0.0.1", "::1"].includes(url.hostname) && !a["allow-remote"]) {
+  console.error(`Refusing to seed synthetic data into a non-local database (${url.hostname}). Add --allow-remote only for a demo database.`);
   process.exit(1);
 }
 
-const a = args();
 const days = Number(a.days ?? 120);
 const to = addDays(isoDay(new Date()), -1);
 const from = addDays(to, -(days - 1));
@@ -76,5 +83,12 @@ await runJob("dev-seed", async (sql) => {
 
   const proc = await processRange(sql, from, to);
   const [{ rollup_community: community }] = await sql<{ rollup_community: number }[]>`select bb.rollup_community(${addDays(to, -30)}, ${to})`;
-  return { from, to, tests: res.count, ...proc, communityRollupRows: community };
+
+  if (a.slim) {
+    // statistics are already built; the raw fake rows aren't needed any more
+    await sql`delete from bb.mlab_tests where uuid like 'devseed-%'`;
+    await sql`vacuum (full, analyze) bb.mlab_tests`;
+  }
+  const [{ size }] = await sql<{ size: string }[]>`select pg_size_pretty(pg_database_size(current_database())) as size`;
+  return { from, to, tests: res.count, ...proc, communityRollupRows: community, slim: Boolean(a.slim), databaseSize: size };
 });

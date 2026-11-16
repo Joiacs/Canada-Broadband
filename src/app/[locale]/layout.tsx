@@ -48,11 +48,21 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="flex min-h-dvh flex-col">
+      <body
+        className="flex min-h-dvh flex-col"
+        // the map fills the screen below the header and (in demo mode) the banner
+        style={{ ["--banner-h" as string]: process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? "1.75rem" : "0px" }}
+      >
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:shadow-card">
           {t.nav.skip}
         </a>
         <SiteHeader locale={locale} t={t} />
+        {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+          <div role="note" className="flex h-7 items-center justify-center border-b border-warn/30 bg-warn/10 px-4 text-center text-xs text-text">
+            <span className="truncate md:hidden">{t.demo.short}</span>
+            <span className="hidden truncate md:inline">{t.demo.banner}</span>
+          </div>
+        )}
         <main id="main" className="flex flex-1 flex-col">
           {children}
         </main>

@@ -19,7 +19,7 @@ import { args, BUILD_DIR, ROOT } from "./lib/env";
 import { runJob } from "./lib/db";
 import { ensureDir, run } from "./lib/files";
 
-const ZOOMS: Record<string, [number, number]> = { pr: [0, 11], cd: [2, 11], csd: [4, 11], hex: [5, 11] };
+const ZOOMS: Record<string, [number, number]> = { pr: [0, 11], cd: [0, 11], csd: [4, 11], hex: [5, 11] };
 
 await runJob("tiles", async (sql) => {
   const a = args();
