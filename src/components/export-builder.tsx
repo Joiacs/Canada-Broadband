@@ -4,8 +4,10 @@ import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionary";
+import Select from "@/components/ui/select";
 
-const inputCls = "w-full rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm text-text";
+const inputCls =
+  "mt-1 w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-sm text-text shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
 
 /** Small form that builds an /api/export URL. */
 export default function ExportBuilder({ locale, latest }: { locale: Locale; latest: string }) {
@@ -21,33 +23,17 @@ export default function ExportBuilder({ locale, latest }: { locale: Locale; late
   const href = useMemo(() => `/api/export?${new URLSearchParams({ level, direction, source, isp: "0", from, to })}`, [level, direction, source, from, to]);
   return (
     <div className="not-prose grid gap-3 rounded-xl border border-border bg-surface p-4 sm:grid-cols-3">
-      <label className="text-xs text-muted">
-        {t.map.level}
-        <select className={inputCls} value={level} onChange={(e) => setLevel(e.target.value)}>
-          {(["pr", "cd", "csd"] as const).map((l) => (
-            <option key={l} value={l}>
-              {t.levels[l]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="text-xs text-muted">
-        {t.map.direction}
-        <select className={inputCls} value={direction} onChange={(e) => setDirection(e.target.value)}>
-          <option value="down">{t.common.download}</option>
-          <option value="up">{t.common.upload}</option>
-        </select>
-      </label>
-      <label className="text-xs text-muted">
-        {t.map.source}
-        <select className={inputCls} value={source} onChange={(e) => setSource(e.target.value)}>
-          {(["all", "mlab", "community"] as const).map((s) => (
-            <option key={s} value={s}>
-              {t.map.sources[s]}
-            </option>
-          ))}
-        </select>
-      </label>
+      <Select label={t.map.level} value={level} onChange={setLevel} options={(["pr", "cd", "csd"] as const).map((l) => ({ value: l, label: t.levels[l] }))} />
+      <Select
+        label={t.map.direction}
+        value={direction}
+        onChange={setDirection}
+        options={[
+          { value: "down", label: t.common.download },
+          { value: "up", label: t.common.upload },
+        ]}
+      />
+      <Select label={t.map.source} value={source} onChange={setSource} options={(["all", "mlab", "community"] as const).map((s) => ({ value: s, label: t.map.sources[s] }))} />
       <label className="text-xs text-muted">
         {t.map.from}
         <input type="date" className={inputCls} value={from} max={to} onChange={(e) => e.target.value && setFrom(e.target.value)} />
@@ -57,7 +43,7 @@ export default function ExportBuilder({ locale, latest }: { locale: Locale; late
         <input type="date" className={inputCls} value={to} min={from} max={end} onChange={(e) => e.target.value && setTo(e.target.value)} />
       </label>
       <div className="flex items-end">
-        <a href={href} download className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-contrast no-underline">
+        <a href={href} download className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand px-3 py-2 text-sm font-medium text-brand-contrast no-underline hover:opacity-90">
           <Download className="size-4" aria-hidden /> {t.map.downloadCsv}
         </a>
       </div>

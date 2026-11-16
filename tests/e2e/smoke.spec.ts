@@ -9,10 +9,17 @@ test("root redirects to a language and the map renders", async ({ page }) => {
 test("filters are reflected in the URL", async ({ page, isMobile }) => {
   await page.goto("/en");
   if (isMobile) await page.getByRole("button", { name: "Map filters" }).click();
-  await page.getByLabel("Show").selectOption("pctMeet");
+  await page.getByRole("button", { name: /^Show/ }).click();
+  await page.getByRole("option", { name: "% of people meeting 50/10" }).click();
   await expect(page).toHaveURL(/m=pctMeet/);
-  await page.getByLabel("Areas").selectOption("pr");
+  // keyboard: open with ArrowDown, move, pick with Enter
+  await page.getByRole("button", { name: /^Areas/ }).focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await page.keyboard.press("Home");
+  await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/l=pr/);
+  await expect(page.getByRole("listbox")).toHaveCount(0);
 });
 
 test("search finds a province and opens its panel", async ({ page }) => {
@@ -56,6 +63,21 @@ test("API validates input", async ({ request }) => {
   expect(ok.ok()).toBeTruthy();
   const bad = await request.post("/api/tests", { data: { downMbps: -1 } });
   expect(bad.status()).toBe(400);
+});
+
+test("mobile menu closes after navigating", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "phone layout only");
+  await page.goto("/en/about");
+  await page.getByRole("button", { name: "Menu" }).click();
+  const nav = page.getByRole("navigation", { name: "Mobile" });
+  await expect(nav).toBeVisible();
+  await nav.getByRole("link", { name: "Methodology" }).click();
+  await expect(page).toHaveURL(/\/en\/methodology/);
+  await expect(nav).toHaveCount(0);
+  // tapping outside also closes it
+  await page.getByRole("button", { name: "Menu" }).click();
+  await page.mouse.click(20, 400);
+  await expect(page.getByRole("navigation", { name: "Mobile" })).toHaveCount(0);
 });
 
 test("content pages exist in both languages", async ({ page }) => {

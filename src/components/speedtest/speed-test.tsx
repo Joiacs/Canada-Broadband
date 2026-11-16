@@ -7,6 +7,7 @@ import RegionSearch from "@/components/region-search";
 import { localePath, type Locale } from "@/i18n/config";
 import { fmt, formatMbps, type Messages } from "@/i18n/dictionary";
 import { CONNECTION_TYPES } from "@/lib/submission";
+import Select from "@/components/ui/select";
 import Gauge from "./gauge";
 import Turnstile from "./turnstile";
 
@@ -14,7 +15,8 @@ type Phase = "idle" | "locating" | "download" | "upload" | "done" | "error";
 type Result = { down: number; up: number; latency: number | null; uuidDown: string | null; uuidUp: string | null };
 type Location = { type: "gps"; lat: number; lon: number } | { type: "search"; regionId: string; name: string };
 
-const inputCls = "w-full rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm text-text shadow-sm focus:border-brand focus:outline-none";
+const inputCls =
+  "w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
 const labelCls = "mb-1 block text-xs font-medium text-muted";
 
 export default function SpeedTest({ t, locale }: { t: Messages; locale: Locale }) {
@@ -337,20 +339,12 @@ function ShareForm({ result, t, locale }: { result: Result; t: Messages; locale:
       <fieldset className="space-y-3">
         <legend className="text-sm font-semibold">{t.speedTest.survey}</legend>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label htmlFor="s-isp" className={labelCls}>
-              {t.speedTest.isp}
-            </label>
-            <select id="s-isp" className={inputCls} value={isp} onChange={(e) => setIsp(e.target.value)}>
-              <option value="">—</option>
-              {isps.map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.name}
-                </option>
-              ))}
-              <option value="other">{t.speedTest.other}</option>
-            </select>
-          </div>
+          <Select
+            label={t.speedTest.isp}
+            value={isp}
+            onChange={setIsp}
+            options={[{ value: "", label: "—" }, ...isps.map((i) => ({ value: String(i.id), label: i.name })), { value: "other", label: t.speedTest.other }]}
+          />
           {isp === "other" && (
             <div>
               <label htmlFor="s-isp-other" className={labelCls}>
@@ -359,19 +353,12 @@ function ShareForm({ result, t, locale }: { result: Result; t: Messages; locale:
               <input id="s-isp-other" className={inputCls} maxLength={80} value={ispOther} onChange={(e) => setIspOther(e.target.value)} />
             </div>
           )}
-          <div>
-            <label htmlFor="s-conn" className={labelCls}>
-              {t.speedTest.connectionType}
-            </label>
-            <select id="s-conn" className={inputCls} value={conn} onChange={(e) => setConn(e.target.value)}>
-              <option value="">—</option>
-              {CONNECTION_TYPES.map((c) => (
-                <option key={c} value={c}>
-                  {t.tech[c]}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            label={t.speedTest.connectionType}
+            value={conn}
+            onChange={setConn}
+            options={[{ value: "", label: "—" }, ...CONNECTION_TYPES.map((c) => ({ value: c, label: t.tech[c] }))]}
+          />
           <div>
             <label htmlFor="s-pd" className={labelCls}>
               {t.speedTest.planDown}

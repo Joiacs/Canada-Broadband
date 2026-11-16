@@ -7,6 +7,7 @@ import type { Messages } from "@/i18n/dictionary";
 import LanguageSwitcher from "./language-switcher";
 import ThemeToggle from "./theme-toggle";
 import NavLink from "./nav-link";
+import MobileMenu from "./mobile-menu";
 
 const plainLink = "whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted transition-colors hover:bg-surface-2";
 
@@ -43,20 +44,20 @@ export default function SiteHeader({ locale, t }: { locale: Locale; t: Messages 
             <LanguageSwitcher locale={locale} label={t.nav.language} ariaLabel={t.nav.languageLabel} />
           </Suspense>
           <ThemeToggle label={t.nav.theme} />
-          <details className="relative md:hidden">
-            <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-md hover:bg-surface-2" aria-label={t.nav.menu}>
-              <Menu className="size-5" aria-hidden />
-            </summary>
-            <nav aria-label="Mobile" className="absolute right-0 mt-2 flex w-56 flex-col rounded-lg border border-border bg-surface p-2 shadow-card">
-              {items.map((i) => (
-                <Suspense key={i.page} fallback={<Link href={localePath(locale, i.page)} className={`block ${plainLink}`}>{i.label}</Link>}>
-                  <NavLink href={localePath(locale, i.page)} exact={i.page === "home"} block>
-                    {i.label}
-                  </NavLink>
-                </Suspense>
-              ))}
-            </nav>
-          </details>
+          {/* usePathname() needs Suspense; the fallback is the closed menu button */}
+          <Suspense
+            fallback={
+              <span className="flex size-9 items-center justify-center rounded-md md:hidden" aria-hidden>
+                <Menu className="size-5" />
+              </span>
+            }
+          >
+            <MobileMenu
+              label={t.nav.menu}
+              closeLabel={t.common.close}
+              items={items.map((i) => ({ href: localePath(locale, i.page), label: i.label, exact: i.page === "home" }))}
+            />
+          </Suspense>
         </div>
       </div>
     </header>
