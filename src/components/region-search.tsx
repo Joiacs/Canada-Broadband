@@ -29,9 +29,11 @@ export default function RegionSearch({
   const [active, setActive] = useState(-1);
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  // picking a result fills the box with its name; don't search again for that
+  const picked = useRef<string | null>(null);
 
   useEffect(() => {
-    if (q.trim().length < 2) return;
+    if (q.trim().length < 2 || q === picked.current) return;
     const ctrl = new AbortController();
     const timer = setTimeout(async () => {
       try {
@@ -53,7 +55,9 @@ export default function RegionSearch({
 
   const pick = (r: SearchResult) => {
     onPick(r);
-    setQ(locale === "fr" ? r.nameFr : r.nameEn);
+    const name = locale === "fr" ? r.nameFr : r.nameEn;
+    picked.current = name;
+    setQ(name);
     setOpen(false);
   };
   const shown = q.trim().length >= 2 ? results : [];
@@ -77,7 +81,7 @@ export default function RegionSearch({
         placeholder={placeholder ?? t.map.search}
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        onFocus={() => shown.length && setOpen(true)}
+        onFocus={() => shown.length && q !== picked.current && setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         onKeyDown={(e) => {
           if (e.key === "ArrowDown") {

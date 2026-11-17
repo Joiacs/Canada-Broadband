@@ -12,18 +12,16 @@ function Endpoints() {
     ["GET /api/export?level=&direction=&source=&isp=&from=&to=", "CSV of the same statistics"],
   ];
   return (
-    <table>
-      <tbody>
-        {rows.map(([e, d]) => (
-          <tr key={e}>
-            <td>
-              <code>{e}</code>
-            </td>
-            <td>{d}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <dl className="mt-3 divide-y divide-border border-y border-border">
+      {rows.map(([e, d]) => (
+        <div key={e} className="gap-4 py-2.5 sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <dt>
+            <code className="break-all">{e}</code>
+          </dt>
+          <dd className="mt-1 text-sm text-muted sm:mt-0">{d}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 

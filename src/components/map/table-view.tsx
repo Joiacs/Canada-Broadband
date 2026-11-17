@@ -41,9 +41,9 @@ export default function TableView({ level, stats, t, locale, onSelect }: { level
     });
   }, [names, level, stats, sort, locale]);
 
-  const th = (key: SortKey, label: string, right = false) => (
-    <th scope="col" aria-sort={sort.key === key ? (sort.dir === 1 ? "ascending" : "descending") : "none"} className={`sticky top-0 bg-surface px-3 py-2 font-medium ${right ? "text-right" : "text-left"}`}>
-      <button type="button" className="hover:text-text" onClick={() => setSort((s) => ({ key, dir: s.key === key ? (s.dir === 1 ? -1 : 1) : key === "name" ? 1 : -1 }))}>
+  const th = (key: SortKey, label: string, right = false, extra = "") => (
+    <th scope="col" aria-sort={sort.key === key ? (sort.dir === 1 ? "ascending" : "descending") : "none"} className={`sticky top-0 bg-surface px-2 py-2 font-medium sm:px-3 ${right ? "text-right" : "text-left"} ${extra}`}>
+      <button type="button" className="py-1.5 hover:text-text" onClick={() => setSort((s) => ({ key, dir: s.key === key ? (s.dir === 1 ? -1 : 1) : key === "name" ? 1 : -1 }))}>
         {label}
         {sort.key === key ? (sort.dir === 1 ? " ▲" : " ▼") : ""}
       </button>
@@ -59,25 +59,25 @@ export default function TableView({ level, stats, t, locale, onSelect }: { level
         <thead className="text-xs text-muted">
           <tr className="border-b border-border">
             {th("name", t.map.name)}
-            {th("n", t.units.people, true)}
+            {th("n", t.units.people, true, "hidden sm:table-cell")}
             {th("median", `${t.common.median} (${t.units.mbps})`, true)}
             {th("pm", "50/10 %", true)}
-            {th("ap", t.map.metrics.advertised, true)}
+            {th("ap", t.map.advertisedShort, true)}
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
             <tr key={r.id} className="border-b border-border hover:bg-surface-2">
-              <td className="px-3 py-1.5">
-                <button type="button" className="text-left hover:underline" onClick={() => onSelect(r.id)}>
+              <td className="px-2 py-1 sm:px-3">
+                <button type="button" className="min-h-9 text-left hover:underline sm:min-h-0 sm:py-0.5" onClick={() => onSelect(r.id)}>
                   {r.name}
                 </button>
                 {level !== "pr" && <span className="ml-1.5 text-xs text-muted">{r.pr}</span>}
               </td>
-              <td className="px-3 py-1.5 text-right tabular-nums text-muted">{formatNumber(locale, r.n)}</td>
-              <td className="px-3 py-1.5 text-right tabular-nums">{formatMbps(locale, r.median)}</td>
-              <td className="px-3 py-1.5 text-right tabular-nums">{r.pm === null ? "—" : `${formatNumber(locale, r.pm)}%`}</td>
-              <td className="px-3 py-1.5 text-right tabular-nums">{r.ap === null ? "—" : `${formatNumber(locale, r.ap)}%`}</td>
+              <td className="hidden px-3 py-1.5 text-right tabular-nums text-muted sm:table-cell">{formatNumber(locale, r.n)}</td>
+              <td className="px-2 py-1.5 text-right tabular-nums sm:px-3">{formatMbps(locale, r.median)}</td>
+              <td className="px-2 py-1.5 text-right tabular-nums sm:px-3">{r.pm === null ? "—" : `${formatNumber(locale, r.pm)}%`}</td>
+              <td className="px-2 py-1.5 text-right tabular-nums sm:px-3">{r.ap === null ? "—" : `${formatNumber(locale, r.ap)}%`}</td>
             </tr>
           ))}
         </tbody>

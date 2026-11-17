@@ -122,6 +122,10 @@ export default function MapView(props: Props) {
       applyHighlight(map);
     };
     map.on("style.load", onStyleLoad);
+    // phones: start with the attribution collapsed to its (i) button
+    map.once("load", () => {
+      if (window.innerWidth < 768) container.current?.querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
+    });
 
     map.on("mousemove", (e) => {
       const level = propsRef.current.level;
@@ -299,7 +303,12 @@ export default function MapView(props: Props) {
     if (!map || !fitTo) return;
     const [x1, y1, x2, y2] = fitTo.bbox;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    map.fitBounds([[x1, y1], [x2, y2]], { padding: { top: 60, bottom: 60, left: 60, right: 60 }, maxZoom: 10, duration: reduce ? 0 : 900 });
+    const phone = window.innerWidth < 768;
+    // phones: the region panel covers the bottom ~60% and the search card the top
+    const padding = phone
+      ? { top: 150, bottom: Math.round(window.innerHeight * 0.6), left: 24, right: 24 }
+      : { top: 60, bottom: 60, left: 60, right: 60 };
+    map.fitBounds([[x1, y1], [x2, y2]], { padding, maxZoom: 10, duration: reduce ? 0 : 900 });
   }, [fitTo]);
 
   useEffect(() => {

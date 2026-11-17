@@ -128,7 +128,7 @@ export default function RegionPanel({
             <p className="text-sm text-muted">{error ? t.common.error : t.common.loading}</p>
           )}
         </div>
-        <button type="button" onClick={onClose} className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-text" aria-label={t.common.close}>
+        <button type="button" onClick={onClose} className="flex size-9 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-text md:size-8" aria-label={t.common.close}>
           <X className="size-4" aria-hidden />
         </button>
       </div>
@@ -136,7 +136,7 @@ export default function RegionPanel({
       {detail && (
         <>
           <div className="flex flex-wrap gap-1.5 border-b border-border px-4 py-2">
-            <button type="button" onClick={() => onZoom(detail.region.bbox)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs hover:bg-surface-2">
+            <button type="button" onClick={() => onZoom(detail.region.bbox)} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 text-xs hover:bg-surface-2 md:min-h-0 md:px-2 md:py-1">
               <Maximize2 className="size-3.5" aria-hidden /> {t.map.zoomTo}
             </button>
             {detail.region.level !== "hex" && (
@@ -144,13 +144,13 @@ export default function RegionPanel({
                 type="button"
                 onClick={compareMode || compareId ? onCancelCompare : onCompare}
                 aria-pressed={compareMode || Boolean(compareId)}
-                className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs hover:bg-surface-2 ${compareMode || compareId ? "border-brand text-brand" : "border-border"}`}
+                className={`inline-flex min-h-9 items-center gap-1 rounded-md border px-2.5 text-xs hover:bg-surface-2 md:min-h-0 md:px-2 md:py-1 ${compareMode || compareId ? "border-brand text-brand" : "border-border"}`}
               >
                 <GitCompareArrows className="size-3.5" aria-hidden /> {compareMode || compareId ? t.map.cancelCompare : t.map.compare}
               </button>
             )}
             {detail.region.level !== "hex" && (
-              <Link href={regionHref(locale, detail.region)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs hover:bg-surface-2">
+              <Link href={regionHref(locale, detail.region)} className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 text-xs hover:bg-surface-2 md:min-h-0 md:px-2 md:py-1">
                 <ArrowUpRight className="size-3.5" aria-hidden /> {t.map.openPage}
               </Link>
             )}
@@ -177,7 +177,7 @@ export default function RegionPanel({
                       type="button"
                       aria-selected={tab === k}
                       onClick={() => setTab(k)}
-                      className={`rounded-md px-2.5 py-1 text-sm ${tab === k ? "bg-surface-2 font-medium" : "text-muted hover:text-text"}`}
+                      className={`min-h-9 rounded-md px-3 text-sm md:min-h-0 md:px-2.5 md:py-1 ${tab === k ? "bg-surface-2 font-medium" : "text-muted hover:text-text"}`}
                     >
                       {t.panel[k]}
                     </button>

@@ -138,14 +138,14 @@ async function RegionContent({ params }: { params: PageProps<"/[locale]/region/[
               {isps.length > 0 && (
                 <div>
                   <h3 className="mb-2 text-sm font-medium text-muted">{t.panel.byIsp}</h3>
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm [&_td+td]:pl-3 [&_th+th]:pl-3">
                     <thead className="text-left text-xs text-muted">
                       <tr>
                         <th scope="col" className="pb-1 font-normal">{t.map.isp}</th>
                         <th scope="col" className="pb-1 text-right font-normal">↓ {t.units.mbps}</th>
                         <th scope="col" className="pb-1 text-right font-normal">↑ {t.units.mbps}</th>
                         <th scope="col" className="pb-1 text-right font-normal">50/10</th>
-                        <th scope="col" className="pb-1 text-right font-normal">{t.units.people}</th>
+                        <th scope="col" className="hidden pb-1 text-right font-normal sm:table-cell">{t.units.people}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -155,7 +155,7 @@ async function RegionContent({ params }: { params: PageProps<"/[locale]/region/[
                           <td className="py-1.5 text-right tabular-nums">{formatMbps(locale, r.down.median)}</td>
                           <td className="py-1.5 text-right tabular-nums">{r.up.n >= MIN_N ? formatMbps(locale, r.up.median) : "—"}</td>
                           <td className="py-1.5 text-right tabular-nums">{r.down.pctMeet !== null ? `${formatNumber(locale, r.down.pctMeet)}%` : "—"}</td>
-                          <td className="py-1.5 text-right tabular-nums text-muted">{formatNumber(locale, r.down.n)}</td>
+                          <td className="hidden py-1.5 text-right tabular-nums text-muted sm:table-cell">{formatNumber(locale, r.down.n)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -189,8 +189,8 @@ async function RegionContent({ params }: { params: PageProps<"/[locale]/region/[
               {children.map((c) => {
                 const s = (childStats as Record<string, [number, number | null]>)[c.id];
                 return (
-                  <li key={c.id} className="flex justify-between gap-2 border-b border-border py-1.5">
-                    <Link href={regionHref(locale, c)} className="hover:underline">
+                  <li key={c.id} className="flex items-center justify-between gap-2 border-b border-border">
+                    <Link href={regionHref(locale, c)} className="flex-1 py-2.5 hover:underline sm:py-1.5">
                       {regionName(c, locale)}
                     </Link>
                     <span className="tabular-nums text-muted">{s && s[0] >= MIN_N ? `${formatMbps(locale, s[1])} ${t.units.mbps}` : "—"}</span>

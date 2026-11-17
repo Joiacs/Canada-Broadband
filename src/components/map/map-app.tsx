@@ -67,6 +67,7 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
         if (!compareMode) update({ r: undefined, c: undefined });
         return;
       }
+      setFiltersOpen(false); // phones: picking a region reveals the map and panel
       if (compareMode && state.r && rid !== state.r) {
         update({ c: rid });
         setCompareMode(false);
@@ -125,18 +126,38 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
               <SlidersHorizontal className="size-4" aria-hidden />
             </button>
           </div>
+          {/* phones: one-line summary of the filters while they're collapsed */}
+          {!filtersOpen && (
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-controls="map-filters"
+              className="mt-1 block w-full truncate py-2 text-left text-xs text-muted md:hidden"
+            >
+              {[t.map.metrics[state.m], state.m !== "advertised" ? (state.d === "down" ? t.common.download : t.common.upload) : null, t.levels[state.l], state.p === "custom" ? `${range.from} – ${range.to}` : t.map.periods[state.p]]
+                .filter(Boolean)
+                .join(" · ")}
+            </button>
+          )}
           <div id="map-filters" className={`${filtersOpen ? "block" : "hidden"} mt-3 md:block`}>
             <h2 className="sr-only">{t.map.filters}</h2>
             <Filters state={state} update={update} t={t} locale={locale} isps={meta?.isps ?? []} latest={meta?.latest.any ?? null} range={range} exportHref={exportHref} />
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(false)}
+              className="mt-3 flex min-h-10 w-full items-center justify-center rounded-lg bg-brand text-sm font-medium text-brand-contrast md:hidden"
+            >
+              {t.map.showMap}
+            </button>
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-1 rounded-md border border-border bg-surface-2 p-0.5 text-sm" role="group" aria-label={`${t.map.mapView} / ${t.map.table}`}>
+          <div className="mt-3 grid grid-cols-2 gap-1 rounded-lg border border-border bg-surface-2 p-0.5 text-sm" role="group" aria-label={`${t.map.mapView} / ${t.map.table}`}>
             {(["map", "table"] as const).map((v) => (
               <button
                 key={v}
                 type="button"
                 aria-pressed={state.v === v}
                 onClick={() => update({ v })}
-                className={`flex items-center justify-center gap-1.5 rounded px-2 py-1 ${state.v === v ? "bg-surface font-medium shadow-sm" : "text-muted"}`}
+                className={`flex min-h-9 items-center justify-center gap-1.5 rounded-md px-2 md:min-h-0 md:py-1 ${state.v === v ? "bg-surface font-medium shadow-sm" : "text-muted"}`}
               >
                 {v === "map" ? <MapIcon className="size-3.5" aria-hidden /> : <List className="size-3.5" aria-hidden />}
                 {v === "map" ? t.map.mapView : t.map.table}
@@ -172,7 +193,8 @@ export default function MapApp({ locale, t }: { locale: Locale; t: Messages }) {
 
       {/* Table view */}
       {state.v === "table" && (
-        <div className="absolute inset-0 z-[5] bg-surface pt-[1px] md:left-[21rem]">
+        // phones: start below the floating search card; desktop: to the right of it
+        <div className="absolute inset-0 z-[5] bg-surface pt-40 md:left-[21rem] md:pt-px">
           <TableView level={state.l} stats={stats} t={t} locale={locale} onSelect={(id) => update({ r: id, c: undefined })} />
         </div>
       )}

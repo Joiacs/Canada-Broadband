@@ -9,7 +9,7 @@ test("root redirects to a language and the map renders", async ({ page }) => {
 test("filters are reflected in the URL", async ({ page, isMobile }) => {
   await page.goto("/en");
   if (isMobile) await page.getByRole("button", { name: "Map filters" }).click();
-  await page.getByRole("button", { name: /^Show/ }).click();
+  await page.getByRole("button", { name: /^Show Median/ }).click();
   await page.getByRole("option", { name: "% of people meeting 50/10" }).click();
   await expect(page).toHaveURL(/m=pctMeet/);
   // keyboard: open with ArrowDown, move, pick with Enter

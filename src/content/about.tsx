@@ -52,7 +52,7 @@ function Faq({ items }: { items: [string, React.ReactNode][] }) {
     <div className="mt-4 divide-y divide-border rounded-xl border border-border bg-surface">
       {items.map(([q, a]) => (
         <details key={q} className="group p-4">
-          <summary className="cursor-pointer list-none font-medium marker:hidden">
+          <summary className="cursor-pointer list-none py-1 font-medium marker:hidden">
             <span className="mr-2 inline-block text-brand transition group-open:rotate-90">›</span>
             {q}
           </summary>

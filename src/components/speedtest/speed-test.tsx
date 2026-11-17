@@ -128,12 +128,11 @@ export default function SpeedTest({ t, locale }: { t: Messages; locale: Locale }
               <h3 className="mb-2 font-semibold">{t.speedTest.consentTitle}</h3>
               <p>{t.speedTest.consentMlab}</p>
               <p className="mt-2">{t.speedTest.consentIdeva}</p>
-              <p className="mt-2 text-xs text-muted">
-                <a className="underline" href="https://www.measurementlab.net/privacy/" target="_blank" rel="noreferrer">
+              <p className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted">
+                <a className="inline-block py-1.5 underline" href="https://www.measurementlab.net/privacy/" target="_blank" rel="noreferrer">
                   {t.speedTest.mlabPolicy}
-                </a>{" "}
-                ·{" "}
-                <Link className="underline" href={localePath(locale, "privacy")}>
+                </a>
+                <Link className="inline-block py-1.5 underline" href={localePath(locale, "privacy")}>
                   {t.speedTest.ourPolicy}
                 </Link>
               </p>

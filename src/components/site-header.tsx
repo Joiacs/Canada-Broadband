@@ -21,10 +21,10 @@ export default function SiteHeader({ locale, t }: { locale: Locale; t: Messages 
   ];
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/75">
-      <div className="mx-auto flex h-14 max-w-screen-2xl items-center gap-3 px-4">
-        <Link href={localePath(locale, "home")} className="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
+      <div className="mx-auto flex h-14 max-w-screen-2xl items-center gap-2 px-3 sm:gap-3 sm:px-4">
+        <Link href={localePath(locale, "home")} className="flex min-w-0 items-center gap-2 font-semibold tracking-tight">
           <Image src="/ideva-bulb.png" alt="Ideva" width={28} height={28} priority />
-          <span>
+          <span className="truncate">
             {t.meta.brandLead} <span className="text-gradient">{t.meta.brandAccent}</span>
             <span className="ml-1.5 hidden text-xs font-normal text-muted lg:inline">{t.meta.by}</span>
           </span>
@@ -39,9 +39,9 @@ export default function SiteHeader({ locale, t }: { locale: Locale; t: Messages 
             </Suspense>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1">
           <Suspense fallback={<a href={`/${locale === "en" ? "fr" : "en"}`} className={plainLink}>{t.nav.language}</a>}>
-            <LanguageSwitcher locale={locale} label={t.nav.language} ariaLabel={t.nav.languageLabel} />
+            <LanguageSwitcher locale={locale} label={t.nav.language} shortLabel={t.nav.languageShort} ariaLabel={t.nav.languageLabel} />
           </Suspense>
           <ThemeToggle label={t.nav.theme} />
           {/* usePathname() needs Suspense; the fallback is the closed menu button */}

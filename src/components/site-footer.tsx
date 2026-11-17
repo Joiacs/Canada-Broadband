@@ -15,14 +15,14 @@ export default function SiteFooter({ locale, t }: { locale: Locale; t: Messages 
           </p>
           <p className="text-xs leading-relaxed">{t.footer.sources}</p>
         </div>
-        <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-1">
-          <Link className="hover:text-text" href={localePath(locale, "methodology")}>
+        <nav aria-label="Footer" className="-mx-2 flex flex-wrap">
+          <Link className="rounded-md px-2 py-2 hover:text-text" href={localePath(locale, "methodology")}>
             {t.footer.methodology}
           </Link>
-          <Link className="hover:text-text" href={localePath(locale, "data")}>
+          <Link className="rounded-md px-2 py-2 hover:text-text" href={localePath(locale, "data")}>
             {t.footer.data}
           </Link>
-          <Link className="hover:text-text" href={localePath(locale, "privacy")}>
+          <Link className="rounded-md px-2 py-2 hover:text-text" href={localePath(locale, "privacy")}>
             {t.footer.privacy}
           </Link>
         </nav>

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { switchLocalePath, type Locale } from "@/i18n/config";
 
 /** Links to the same page in the other language, keeping map filters in the query string. */
-export default function LanguageSwitcher({ locale, label, ariaLabel }: { locale: Locale; label: string; ariaLabel: string }) {
+export default function LanguageSwitcher({ locale, label, shortLabel, ariaLabel }: { locale: Locale; label: string; shortLabel: string; ariaLabel: string }) {
   const pathname = usePathname() ?? `/${locale}`;
   const target: Locale = locale === "en" ? "fr" : "en";
   const href = switchLocalePath(pathname, target);
@@ -19,9 +19,10 @@ export default function LanguageSwitcher({ locale, label, ariaLabel }: { locale:
         e.preventDefault();
         window.location.assign(href + window.location.search);
       }}
-      className="rounded-md px-2.5 py-1.5 text-sm font-medium text-muted hover:bg-surface-2 hover:text-text"
+      className="flex h-9 items-center rounded-md px-2 text-sm font-medium text-muted hover:bg-surface-2 hover:text-text sm:px-2.5"
     >
-      {label}
+      <span className="sm:hidden">{shortLabel}</span>
+      <span className="hidden sm:inline">{label}</span>
     </a>
   );
 }
