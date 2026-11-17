@@ -20,7 +20,8 @@
     "pipeline:tiles": "tsx --env-file-if-exists=.env.local pipeline/tiles.ts",
     "pipeline:mlab": "tsx --env-file-if-exists=.env.local pipeline/mlab.ts",
     "pipeline:nightly": "tsx --env-file-if-exists=.env.local pipeline/nightly.ts",
-    "pipeline:dev-seed": "tsx --env-file-if-exists=.env.local pipeline/dev-seed.ts"
+    "pipeline:dev-seed": "tsx --env-file-if-exists=.env.local pipeline/dev-seed.ts",
+    "pipeline:publish": "tsx --env-file-if-exists=.env.local pipeline/publish.ts"
   },
   "dependencies": {
     "@m-lab/ndt7": "^0.1.5",

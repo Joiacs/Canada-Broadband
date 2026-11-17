@@ -16,7 +16,7 @@ import path from "node:path";
 import readline from "node:readline";
 import { provinceByAbbr } from "../src/lib/provinces";
 import { args, BUILD_DIR, RAW_DIR } from "./lib/env";
-import { runJob, type Sql } from "./lib/db";
+import { backupCommunityAreas, restoreCommunityAreas, runJob, type Sql } from "./lib/db";
 import { download, ensureDir, readLines, run, stdoutOf, zipEntries } from "./lib/files";
 import { parseCsvLine, stripBom } from "./lib/csv";
 
@@ -196,6 +196,8 @@ await runJob("ised", async (sql) => {
 
   console.log("1/4 hexagons + providers");
   await sql`truncate bb.ised_hex_providers, bb.ised_hex, bb.region_availability`;
+  await backupCommunityAreas(sql); // hexagon links are restored at the end
+  await sql`update bb.community_tests set hex_id = null where hex_id is not null`;
   await sql`delete from bb.regions where level = 'hex'`;
   await loadHexagons(sql, shpZip, csvZip);
 
@@ -254,5 +256,5 @@ await runJob("ised", async (sql) => {
            (select count(*)::int from bb.ised_hex) as hex,
            (select count(*)::int from bb.ised_hex_providers) as providers`;
   await sql`drop table bb.stage_db_agg`;
-  return stats;
+  return { ...stats, communityTestsRestored: await restoreCommunityAreas(sql) };
 });

@@ -72,7 +72,7 @@ await runJob("dev-seed", async (sql) => {
            greatest(0.5, exp(ln(20 + 300 * power(coalesce(h.pop_50_10 / nullif(h.population, 0), 0.5), 3)) + 0.8 * (random() - 0.5) * 3)),
            greatest(0.2, exp(ln(5 + 50 * power(coalesce(h.pop_50_10 / nullif(h.population, 0), 0.5), 3)) + 0.8 * (random() - 0.5) * 3)),
            10 + random() * 60, 'gps', 'pr:' || r.pr_code,
-           (select p.region_id from bb.region_parts p where p.level = 'cd' and st_intersects(p.geom, st_pointonsurface(r.geom)) limit 1),
+           bb.region_at(st_x(st_pointonsurface(r.geom)), st_y(st_pointonsurface(r.geom)), 'cd'),
            r.parent_id, r.id,
            (select id from bb.isps order by random() limit 1),
            (array['fibre','cable','dsl','fixed_wireless','satellite_leo'])[1 + floor(random() * 5)::int],

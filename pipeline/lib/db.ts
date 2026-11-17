@@ -24,6 +24,39 @@ export function connect() {
 
 export type Sql = ReturnType<typeof connect>;
 
+/**
+ * Real speed-test submissions point at regions by id. Reloading boundaries or
+ * hexagons has to clear those links first (foreign keys), so they are copied
+ * here and restored afterwards wherever the region still exists. Synthetic
+ * "devseed" rows are not kept.
+ */
+export async function backupCommunityAreas(sql: Sql) {
+  await sql`
+    create table if not exists bb.community_area_backup (
+      id bigint primary key, pr_id text, cd_id text, csd_id text, hex_id text)`;
+  await sql`
+    insert into bb.community_area_backup (id, pr_id, cd_id, csd_id, hex_id)
+    select id, pr_id, cd_id, csd_id, hex_id from bb.community_tests
+    where client_key not like 'devseed-%' and coalesce(pr_id, cd_id, csd_id, hex_id) is not null
+    on conflict (id) do update set
+      pr_id = coalesce(excluded.pr_id, bb.community_area_backup.pr_id),
+      cd_id = coalesce(excluded.cd_id, bb.community_area_backup.cd_id),
+      csd_id = coalesce(excluded.csd_id, bb.community_area_backup.csd_id),
+      hex_id = coalesce(excluded.hex_id, bb.community_area_backup.hex_id)`;
+}
+
+export async function restoreCommunityAreas(sql: Sql) {
+  const res = await sql`
+    update bb.community_tests c set
+      pr_id  = coalesce(c.pr_id,  (select r.id from bb.regions r where r.id = b.pr_id)),
+      cd_id  = coalesce(c.cd_id,  (select r.id from bb.regions r where r.id = b.cd_id)),
+      csd_id = coalesce(c.csd_id, (select r.id from bb.regions r where r.id = b.csd_id)),
+      hex_id = coalesce(c.hex_id, (select r.id from bb.regions r where r.id = b.hex_id))
+    from bb.community_area_backup b
+    where b.id = c.id`;
+  return res.count;
+}
+
 /** Record a pipeline run in bb.pipeline_runs and always close the pool. */
 export async function runJob(job: string, fn: (sql: Sql) => Promise<Record<string, unknown> | void>) {
   const sql = connect();

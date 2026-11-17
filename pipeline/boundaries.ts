@@ -9,17 +9,27 @@
  * https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21
  * in a browser, choose "Cartographic boundary files", Shapefile, and download
  * Provinces/territories, Census divisions and Census subdivisions into
- * pipeline/data/raw/statcan/ (lpr_000b21a_e.zip, lcd_000b21a_e.zip, lcsd_000b21a_e.zip).
+ * pipeline/data/raw/statcan/ (lpr_000b21a_e.zip, lcd_000b21a_e.zip, lcsd000b21a_e.zip).
  */
-import { existsSync, rmSync } from "node:fs";
+import { createWriteStream, existsSync, rmSync, statSync } from "node:fs";
+import { once } from "node:events";
 import path from "node:path";
 import { PROVINCES, provinceByCode, slugify } from "../src/lib/provinces";
 import { args, BUILD_DIR, RAW_DIR } from "./lib/env";
-import { runJob, type Sql } from "./lib/db";
+import { backupCommunityAreas, restoreCommunityAreas, runJob, type Sql } from "./lib/db";
 import { download, ensureDir, readLines, run, zipEntries } from "./lib/files";
 
+/**
+ * Two levels of detail:
+ *  - the map tiles use the ~20 m conversion written to build/boundaries/tiles-<level>.geojsonl
+ *    (shared borders stay identical, so tippecanoe keeps neighbours aligned);
+ *  - the database keeps a 100 m simplification — it only needs shapes to place
+ *    tests in areas, and this keeps it inside Supabase's free 500 MB.
+ */
+const DB_TOLERANCE_M = 100;
+
 const STATCAN_BASE = "https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers";
-const FILES = { pr: "lpr_000b21a_e.zip", cd: "lcd_000b21a_e.zip", csd: "lcsd_000b21a_e.zip" } as const;
+const FILES = { pr: "lpr_000b21a_e.zip", cd: "lcd_000b21a_e.zip", csd: "lcsd000b21a_e.zip" } as const;
 type Level = keyof typeof FILES;
 
 type Row = {
@@ -44,6 +54,12 @@ const pick = (props: Record<string, unknown>, ...keys: string[]) => {
 };
 
 async function toGeoJsonSeq(src: string, out: string, simplifyMeters: number) {
+  // the conversion is slow (~15 min for StatCan files); reuse it if newer than the source
+  const srcFile = src.replace(/^\/vsizip\//, "").replace(/\.zip\/.*$/, ".zip");
+  if (existsSync(out) && existsSync(srcFile) && statSync(out).mtimeMs > statSync(srcFile).mtimeMs && statSync(out).size > 0) {
+    console.log(`  reusing ${path.basename(out)}`);
+    return;
+  }
   if (existsSync(out)) rmSync(out);
   await run("ogr2ogr", ["-f", "GeoJSONSeq", "-t_srs", "EPSG:4326", "-simplify", String(simplifyMeters), "-lco", "COORDINATE_PRECISION=5", out, src]);
 }
@@ -100,7 +116,10 @@ async function insertRows(sql: Sql, rows: Row[]) {
       ${rows.map((r) => r.parent_id)}::text[], ${rows.map((r) => r.slug)}::text[], ${rows.map((r) => r.geom)}::text[]
     ) as r (id, level, code, name_en, name_fr, pr_code, parent_id, slug, geojson)
     cross join lateral (
-      select st_multi(st_collectionextract(st_makevalid(st_setsrid(st_geomfromgeojson(r.geojson), 4326)), 3))::geometry(MultiPolygon, 4326) as geom
+      -- simplify in metres (StatCan Lambert, EPSG:3347); keep tiny islands from collapsing
+      select st_multi(st_collectionextract(st_makevalid(
+               st_transform(st_simplify(st_transform(st_setsrid(st_geomfromgeojson(r.geojson), 4326), 3347), ${DB_TOLERANCE_M}, true), 4326)
+             ), 3))::geometry(MultiPolygon, 4326) as geom
     ) g
     on conflict (id) do update set
       geom = st_multi(st_union(bb.regions.geom, excluded.geom))::geometry(MultiPolygon, 4326),
@@ -108,12 +127,15 @@ async function insertRows(sql: Sql, rows: Row[]) {
                    greatest(bb.regions.bbox[3], excluded.bbox[3]), greatest(bb.regions.bbox[4], excluded.bbox[4])]`;
 }
 
-async function load(sql: Sql, level: Level, file: string, legacy: boolean) {
+async function load(sql: Sql, level: Level, file: string, legacy: boolean, tileFile: string) {
   let batch: Row[] = [];
   let count = 0;
+  const tiles = createWriteStream(tileFile);
   for await (const line of readLines(file)) {
     const row = rowFromFeature(level, JSON.parse(line), legacy);
     if (!row) continue;
+    // full-detail copy for the map tiles (pipeline:tiles adds names and availability)
+    if (!tiles.write(`{"type":"Feature","properties":{"rid":${JSON.stringify(row.id)}},"geometry":${row.geom}}\n`)) await once(tiles, "drain");
     batch.push(row);
     if (batch.length >= 100) {
       await insertRows(sql, batch);
@@ -123,6 +145,8 @@ async function load(sql: Sql, level: Level, file: string, legacy: boolean) {
   }
   await insertRows(sql, batch);
   count += batch.length;
+  tiles.end();
+  await once(tiles, "finish");
   console.log(`  ${level}: ${count} features`);
   return count;
 }
@@ -146,6 +170,7 @@ await runJob("boundaries", async (sql) => {
   const counts: Record<string, number> = {};
   // Replacing boundaries invalidates everything keyed on region ids.
   await sql`truncate bb.region_availability, bb.ised_hex, bb.ised_hex_providers, bb.region_parts, bb.daily_stats`;
+  await backupCommunityAreas(sql); // real submissions keep their areas (restored below and by pipeline:ised)
   await sql`update bb.community_tests set pr_id = null, cd_id = null, csd_id = null, hex_id = null`;
   await sql`delete from bb.regions`;
   await sql`update bb.mlab_tests set pr_id = null, cd_id = null, csd_id = null`;
@@ -156,12 +181,13 @@ await runJob("boundaries", async (sql) => {
     const out = path.join(build, `${level}.geojsonl`);
     // legacy files are in web mercator metres too, so the same tolerance applies
     await toGeoJsonSeq(src, out, level === "pr" ? 100 : 20);
-    counts[level] = await load(sql, level, out, Boolean(legacyDir));
+    counts[level] = await load(sql, level, out, Boolean(legacyDir), path.join(build, `tiles-${level}.geojsonl`));
   }
 
   // Divisions in legacy data have codes that may not match a province row.
   await sql`update bb.regions r set parent_id = null where parent_id is not null and not exists (select 1 from bb.regions p where p.id = r.parent_id)`;
   await sql`select bb.refresh_region_parts()`;
   await sql`analyze bb.regions; analyze bb.region_parts`.simple();
+  counts.communityTestsRestored = await restoreCommunityAreas(sql);
   return counts;
 });

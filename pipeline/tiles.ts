@@ -1,5 +1,9 @@
 /**
- * Build public/tiles/boundaries.pmtiles from bb.regions with tippecanoe.
+ * Build public/tiles/boundaries.pmtiles with tippecanoe.
+ *
+ * Province / division / community shapes come from the detailed files written
+ * by pipeline:boundaries (build/boundaries/tiles-<level>.geojsonl); the
+ * database only holds a simplified copy. Hexagons come from the database.
  *
  *   pnpm pipeline:tiles [--out path]
  *
@@ -12,12 +16,12 @@
  * In production upload the file to object storage (Cloudflare R2 / Supabase
  * Storage) and point NEXT_PUBLIC_TILES_URL at it — see README.
  */
-import { createWriteStream } from "node:fs";
+import { createWriteStream, existsSync } from "node:fs";
 import { once } from "node:events";
 import path from "node:path";
 import { args, BUILD_DIR, ROOT } from "./lib/env";
 import { runJob } from "./lib/db";
-import { ensureDir, run } from "./lib/files";
+import { ensureDir, readLines, run } from "./lib/files";
 
 const ZOOMS: Record<string, [number, number]> = { pr: [0, 11], cd: [0, 11], csd: [4, 11], hex: [5, 11] };
 
@@ -29,22 +33,43 @@ await runJob("tiles", async (sql) => {
 
   const ws = createWriteStream(seq);
   const counts: Record<string, number> = {};
-  const cursor = sql<{ id: string; level: string; name_en: string; name_fr: string; ap: number | null; g: string }[]>`
-    select r.id, r.level, r.name_en, r.name_fr, round(a.avail_50_10_pct)::int as ap,
-           st_asgeojson(r.geom, 5) as g
-    from bb.regions r
-    left join bb.region_availability a on a.region_id = r.id
+  type Meta = { id: string; level: string; name_en: string; name_fr: string; ap: number | null };
+  const write = async (meta: Meta, geometry: unknown) => {
+    const [minzoom, maxzoom] = ZOOMS[meta.level];
+    const props: Record<string, unknown> = { rid: meta.id, ne: meta.name_en };
+    if (meta.name_fr !== meta.name_en && meta.level !== "hex") props.nf = meta.name_fr;
+    if (meta.ap !== null) props.ap = meta.ap;
+    const line = JSON.stringify({ type: "Feature", properties: props, geometry, tippecanoe: { layer: meta.level, minzoom, maxzoom } });
+    if (!ws.write(line + "\n")) await once(ws, "drain");
+    counts[meta.level] = (counts[meta.level] ?? 0) + 1;
+  };
+
+  const metaRows = await sql<Meta[]>`
+    select r.id, r.level, r.name_en, r.name_fr, round(a.avail_50_10_pct)::int as ap
+    from bb.regions r left join bb.region_availability a on a.region_id = r.id`;
+  const meta = new Map(metaRows.map((m) => [m.id, m]));
+
+  const fromDb: string[] = ["hex"];
+  for (const level of ["pr", "cd", "csd"]) {
+    const file = path.join(BUILD_DIR, "boundaries", `tiles-${level}.geojsonl`);
+    if (!existsSync(file)) {
+      fromDb.push(level);
+      continue;
+    }
+    for await (const line of readLines(file)) {
+      const f = JSON.parse(line) as { properties: { rid: string }; geometry: unknown };
+      const m = meta.get(f.properties.rid);
+      if (m) await write(m, f.geometry);
+    }
+  }
+
+  const cursor = sql<(Meta & { g: string })[]>`
+    select r.id, r.level, r.name_en, r.name_fr, round(a.avail_50_10_pct)::int as ap, st_asgeojson(r.geom, 5) as g
+    from bb.regions r left join bb.region_availability a on a.region_id = r.id
+    where r.level = any(${fromDb}::text[])
     order by r.level, r.id`.cursor(500);
   for await (const rows of cursor) {
-    for (const r of rows) {
-      const [minzoom, maxzoom] = ZOOMS[r.level];
-      const props: Record<string, unknown> = { rid: r.id, ne: r.name_en };
-      if (r.name_fr !== r.name_en && r.level !== "hex") props.nf = r.name_fr;
-      if (r.ap !== null) props.ap = r.ap;
-      const line = JSON.stringify({ type: "Feature", properties: props, geometry: JSON.parse(r.g), tippecanoe: { layer: r.level, minzoom, maxzoom } });
-      if (!ws.write(line + "\n")) await once(ws, "drain");
-      counts[r.level] = (counts[r.level] ?? 0) + 1;
-    }
+    for (const r of rows) await write(r, JSON.parse(r.g));
   }
   ws.end();
   await once(ws, "finish");

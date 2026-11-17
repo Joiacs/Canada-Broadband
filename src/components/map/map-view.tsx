@@ -45,10 +45,18 @@ type Props = {
   label: string;
 };
 
+/**
+ * Version tag for the tile file. Browsers cache boundaries.pmtiles for a day,
+ * so each deploy gets a new URL (?v=…) and nobody keeps old boundaries.
+ * Uses NEXT_PUBLIC_TILES_VERSION if set, otherwise the Git commit Vercel
+ * builds from; empty in local development.
+ */
+const TILES_VERSION = process.env.NEXT_PUBLIC_TILES_VERSION || process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 8) || "";
+
 function tilesUrl() {
   const base = process.env.NEXT_PUBLIC_TILES_URL || "/tiles";
   const abs = base.startsWith("http") ? base : `${window.location.origin}${base}`;
-  return `pmtiles://${abs.replace(/\/$/, "")}/boundaries.pmtiles`;
+  return `pmtiles://${abs.replace(/\/$/, "")}/boundaries.pmtiles${TILES_VERSION ? `?v=${TILES_VERSION}` : ""}`;
 }
 
 function colorExpression(metric: Metric, direction: Direction, theme: "light" | "dark"): ExpressionSpecification {

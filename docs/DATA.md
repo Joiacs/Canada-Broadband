@@ -7,7 +7,7 @@
 | Speed tests | M-Lab NDT, BigQuery `measurement-lab.ndt.unified_downloads` / `unified_uploads` | CC0 | Nightly (`pipeline:nightly`) |
 | Community tests | Our `/speed-test` page (also M-Lab NDT) | Ours, CC BY 4.0 as aggregates | Live |
 | Advertised availability | ISED National Broadband Data: `NBD_PHH_Speeds.zip` (current speeds per pseudo-household), `PHH_2021_CSV.zip` (pseudo-household points), `Map_Data_Shapefile.zip` / `Map_Data_CSV.zip` (hexagons, providers) | OGL – Canada | When ISED publishes (check the dataset page about twice a year), then `pipeline:ised --refresh` + `pipeline:tiles` |
-| Boundaries | Statistics Canada 2021 cartographic boundary files: `lpr_000b21a_e.zip`, `lcd_000b21a_e.zip`, `lcsd_000b21a_e.zip` | OGL – Canada | Census years (next: 2026 census boundaries) |
+| Boundaries | Statistics Canada 2021 cartographic boundary files: `lpr_000b21a_e.zip`, `lcd_000b21a_e.zip`, `lcsd000b21a_e.zip` | OGL – Canada | Census years (next: 2026 census boundaries) |
 | Basemap | OpenFreeMap (OpenStreetMap) | ODbL | n/a |
 
 ### Getting the StatCan files

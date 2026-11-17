@@ -66,7 +66,7 @@ Time: about half a day. Monthly cost while testing: ~$0 (free tiers) + domain. A
 1. Download the boundaries in a browser:
    <https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index2021-eng.cfm?year=21>
    → **Cartographic Boundary Files** → format **Shapefile (.shp)** → download *Provinces/territories*, *Census divisions*, *Census subdivisions*. Save into `pipeline/data/raw/statcan/` named exactly:
-   `lpr_000b21a_e.zip`, `lcd_000b21a_e.zip`, `lcsd_000b21a_e.zip` (rename if needed).
+   `lpr_000b21a_e.zip`, `lcd_000b21a_e.zip`, `lcsd000b21a_e.zip` (rename if needed).
 2. In the same terminal, point the scripts at Supabase. Exported variables take priority over `.env.local`:
    ```bash
    export PIPELINE_DATABASE_URL='<session pooler URL>'
